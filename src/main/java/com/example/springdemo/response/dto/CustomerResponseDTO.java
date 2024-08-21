@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class CustomerResponseDTO {
     private Long id;
-    private String userName;
+    private String username;
     private String phoneNumber;
     private Integer age;
     private String password;

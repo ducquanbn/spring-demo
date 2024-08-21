@@ -46,11 +46,12 @@ public class CustomerController {
     }
 
     @PutMapping("/update/{id}")
-    public BaseResponse<CustomerResponseDTO> updateCustomer(@PathVariable long id, @RequestBody CustomerRequestDTO request) {
-        customerService.createCustomer(request);
+    public BaseResponse<CustomerResponseDTO> updateCustomer(@PathVariable long id, @Validated @RequestBody CustomerRequestDTO request) {
+        customerService.updateCustomer(id, request);
         return BaseResponse.<CustomerResponseDTO>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .message(ErrorCode.SUCCESS.getMessage())
                 .build();
     }
+
 }

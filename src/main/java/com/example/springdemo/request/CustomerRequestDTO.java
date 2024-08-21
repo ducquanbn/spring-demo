@@ -8,8 +8,8 @@ import lombok.Data;
 @Builder
 public class CustomerRequestDTO {
 
-    @NotEmpty(message = "userName is not empty")
-    private String userName;
+    @NotEmpty(message = "username is not empty")
+    private String username;
     private String phoneNumber;
     private Integer age;
     @NotEmpty(message = "password is not empty")

@@ -11,7 +11,8 @@ public enum ErrorCode {
     SUCCESS("0","Success"),
     ERROR("9999","Error"),
     NOT_FOUND("0001", "Data not Found"),
-    USER_EXISTS("0002", "User is exists")
+    USER_EXISTS("0002", "User is exists"),
+    CANT_UPDATE_USERNAME("0002", "Can't update username")
     ;
 
     private final String code;

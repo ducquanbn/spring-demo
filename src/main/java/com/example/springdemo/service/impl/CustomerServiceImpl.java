@@ -48,13 +48,13 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void createCustomer(CustomerRequestDTO request) {
 
-        CustomerEntity customer = customerRepository.findByUserName(request.getUserName());
+        CustomerEntity customer = customerRepository.findByUsername(request.getUsername());
         if (customer != null) {
             throw new BaseException(ErrorCode.USER_EXISTS);
         }
 
         customerRepository.save(CustomerEntity.builder()
-                .userName(request.getUserName())
+                .username(request.getUsername())
                 .phoneNumber(request.getPhoneNumber())
                 .age(request.getAge())
                 .password(request.getPassword())
@@ -71,12 +71,13 @@ public class CustomerServiceImpl implements CustomerService {
         if (customer.isEmpty()) {
             throw new BaseException(ErrorCode.NOT_FOUND);
         }
+
         CustomerEntity customerEntity = CustomerEntity.builder()
                 .id(customer.get().getId())
-                .userName(customer.get().getUserName())
-                .password(customer.get().getPhoneNumber())
-                .age(customer.get().getAge())
-                .password(customer.get().getPassword())
+                .username(customer.get().getUsername())
+                .phoneNumber(request.getPhoneNumber())
+                .age(request.getAge())
+                .password(request.getPassword())
                 .build();
         customerRepository.save(customerEntity);
     }
@@ -84,7 +85,7 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerResponseDTO mapEntity(CustomerEntity customerEntity) {
         return CustomerResponseDTO.builder()
                 .id(customerEntity.getId())
-                .userName(customerEntity.getUserName())
+                .username(customerEntity.getUsername())
                 .phoneNumber(customerEntity.getPhoneNumber())
                 .age(customerEntity.getAge())
                 .password(customerEntity.getPassword())
