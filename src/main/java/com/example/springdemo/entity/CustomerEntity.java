@@ -6,7 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "Customer")
+import java.util.Set;
+
+@Entity
 @Data
 @Builder
 @AllArgsConstructor
@@ -28,4 +30,6 @@ public class CustomerEntity {
 
     @Column(name = "password")
     private String password;
+
+    private Set<String> roles;
 }

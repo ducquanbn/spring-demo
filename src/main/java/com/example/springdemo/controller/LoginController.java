@@ -22,8 +22,8 @@ public class LoginController {
     }
 
     @GetMapping("/verify")
-    public BaseResponse verifyToken(@RequestParam("token") String token) throws ParseException, JOSEException {
-        return BaseResponse.builder()
+    public BaseResponse<Boolean> verifyToken(@RequestParam("token") String token) throws ParseException, JOSEException {
+        return BaseResponse.<Boolean>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .message(ErrorCode.SUCCESS.getMessage())
                 .data(loginService.verifyToken(token))

@@ -1,6 +1,7 @@
 package com.example.springdemo.service.impl;
 
 import com.example.springdemo.common.ErrorCode;
+import com.example.springdemo.common.Role;
 import com.example.springdemo.entity.CustomerEntity;
 import com.example.springdemo.handleException.BaseException;
 import com.example.springdemo.repository.CustomerRepository;
@@ -12,9 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -57,11 +56,15 @@ public class CustomerServiceImpl implements CustomerService {
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
+        Set<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
+
         customerRepository.save(CustomerEntity.builder()
                 .username(request.getUsername())
                 .phoneNumber(request.getPhoneNumber())
                 .age(request.getAge())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .roles(roles)
                 .build());
     }
 
@@ -94,7 +97,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .username(customerEntity.getUsername())
                 .phoneNumber(customerEntity.getPhoneNumber())
                 .age(customerEntity.getAge())
-                .password(customerEntity.getPassword())
+                .roles(customerEntity.getRoles())
                 .build();
     }
 }

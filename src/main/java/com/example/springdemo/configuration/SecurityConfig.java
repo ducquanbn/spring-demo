@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -21,18 +23,19 @@ public class SecurityConfig {
     @Value("${jwt.signerKey}")
     private String MAC_SIGNER;
     private final String[] PUBLIC_ENDPOINT= {
-        "/v1/login",
         "/v1/customer/create"
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-            request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).permitAll()
+            request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")  //"SCOPE_ADMIN"
+                    .requestMatchers(HttpMethod.POST, "/v1/login").permitAll()
                     .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(
-                oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder()))
+                oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
         );
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
@@ -45,5 +48,15 @@ public class SecurityConfig {
         return NimbusJwtDecoder.withSecretKey(secretKeySpec)
                 .macAlgorithm(MacAlgorithm.HS512)
                 .build();
+    }
+
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
     }
 }
