@@ -1,6 +1,5 @@
 package com.example.springdemo.common;
 
-import lombok.Data;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -12,7 +11,9 @@ public enum ErrorCode {
     ERROR("9999","Error"),
     NOT_FOUND("0001", "Data not Found"),
     USER_EXISTS("0002", "User is exists"),
-    CANT_UPDATE_USERNAME("0002", "Can't update username")
+    CANT_UPDATE_USERNAME("0002", "Can't update username"),
+    UNAUTHORIZED("0003", "wrong user or password"),
+    WRONG_PASSWORD("0004", "wrong password")
     ;
 
     private final String code;

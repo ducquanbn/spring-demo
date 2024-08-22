@@ -8,6 +8,8 @@ import com.example.springdemo.request.CustomerRequestDTO;
 import com.example.springdemo.response.dto.CustomerResponseDTO;
 import com.example.springdemo.service.CustomerService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,9 +30,9 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         List<CustomerResponseDTO> customerList = new ArrayList<>();
-        customerEntityList.forEach(data -> {
-            customerList.add(mapEntity(data));
-        });
+        customerEntityList.forEach(data ->
+            customerList.add(mapEntity(data))
+        );
 
         return customerList;
     }
@@ -53,11 +55,13 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BaseException(ErrorCode.USER_EXISTS);
         }
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
         customerRepository.save(CustomerEntity.builder()
                 .username(request.getUsername())
                 .phoneNumber(request.getPhoneNumber())
                 .age(request.getAge())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .build());
     }
 
@@ -72,12 +76,14 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BaseException(ErrorCode.NOT_FOUND);
         }
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
         CustomerEntity customerEntity = CustomerEntity.builder()
                 .id(customer.get().getId())
                 .username(customer.get().getUsername())
                 .phoneNumber(request.getPhoneNumber())
                 .age(request.getAge())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .build();
         customerRepository.save(customerEntity);
     }
