@@ -27,12 +27,12 @@ public class CustomerController {
                 .build();
     }
 
-    @GetMapping("/{id}")
-    public BaseResponse<CustomerResponseDTO> getCustomer(@PathVariable Long id) {
+    @GetMapping("/{username}")
+    public BaseResponse<CustomerResponseDTO> getCustomer(@PathVariable String username) {
         return BaseResponse.<CustomerResponseDTO>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .message(ErrorCode.SUCCESS.getMessage())
-                .data(customerService.findById(id))
+                .data(customerService.findByUsername(username))
                 .build();
     }
 
@@ -45,9 +45,9 @@ public class CustomerController {
                 .build();
     }
 
-    @PutMapping("/update/{id}")
-    public BaseResponse<CustomerResponseDTO> updateCustomer(@PathVariable long id, @Validated @RequestBody CustomerRequestDTO request) {
-        customerService.updateCustomer(id, request);
+    @PutMapping("/update/{username}")
+    public BaseResponse<CustomerResponseDTO> updateCustomer(@PathVariable String username, @Validated @RequestBody CustomerRequestDTO request) {
+        customerService.updateCustomer(username, request);
         return BaseResponse.<CustomerResponseDTO>builder()
                 .code(ErrorCode.SUCCESS.getCode())
                 .message(ErrorCode.SUCCESS.getMessage())

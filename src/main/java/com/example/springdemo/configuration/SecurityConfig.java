@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -18,12 +21,13 @@ import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Value("${jwt.signerKey}")
     private String MAC_SIGNER;
     private final String[] PUBLIC_ENDPOINT= {
-        "/v1/customer/create"
+        "/v1/customer/create",
     };
 
     @Bean
@@ -31,11 +35,13 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(request ->
             request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINT).hasAnyAuthority("ROLE_ADMIN")  //"SCOPE_ADMIN"
                     .requestMatchers(HttpMethod.POST, "/v1/login").permitAll()
-                    .anyRequest().authenticated());
+                    .anyRequest().permitAll());
 
+        //check Bear Token
         httpSecurity.oauth2ResourceServer(
                 oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()) //setting 401 error response
         );
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
@@ -50,6 +56,7 @@ public class SecurityConfig {
                 .build();
     }
 
+    //SCOPE -> ROLE
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
@@ -58,5 +65,10 @@ public class SecurityConfig {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder () {
+        return new BCryptPasswordEncoder(10);
     }
 }

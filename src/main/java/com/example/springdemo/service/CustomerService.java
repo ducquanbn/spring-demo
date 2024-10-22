@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CustomerService {
     List<CustomerResponseDTO> findAll() throws Exception;
-    CustomerResponseDTO findById(Long id) throws Exception;
+    CustomerResponseDTO findByUsername(String username) throws Exception;
     void createCustomer(CustomerRequestDTO request);
-    void updateCustomer(Long id,CustomerRequestDTO request);
+    void updateCustomer(String id,CustomerRequestDTO request);
 }

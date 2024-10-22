@@ -9,7 +9,6 @@ import com.example.springdemo.request.CustomerRequestDTO;
 import com.example.springdemo.response.dto.CustomerResponseDTO;
 import com.example.springdemo.service.CustomerService;
 import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +19,8 @@ import java.util.*;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<CustomerResponseDTO> findAll() {
@@ -37,8 +38,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDTO findById(Long id) {
-        Optional<CustomerEntity> customer = customerRepository.findById(id);
+    public CustomerResponseDTO findByUsername(String username) {
+        Optional<CustomerEntity> customer = Optional.ofNullable(customerRepository.findByUsername(username));
         if (customer.isEmpty()) {
             throw new BaseException(ErrorCode.NOT_FOUND);
         }
@@ -54,8 +55,6 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BaseException(ErrorCode.USER_EXISTS);
         }
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-
         Set<String> roles = new HashSet<>();
         roles.add(Role.USER.name());
 
@@ -69,17 +68,15 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void updateCustomer(Long id, CustomerRequestDTO request) {
-        if (id == null) {
+    public void updateCustomer(String username, CustomerRequestDTO request) {
+        if (username == null) {
             throw new BaseException(ErrorCode.NOT_FOUND);
         }
 
-        Optional<CustomerEntity> customer = customerRepository.findById(id);
+        Optional<CustomerEntity> customer = Optional.ofNullable(customerRepository.findByUsername(username));
         if (customer.isEmpty()) {
             throw new BaseException(ErrorCode.NOT_FOUND);
         }
-
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         CustomerEntity customerEntity = CustomerEntity.builder()
                 .id(customer.get().getId())

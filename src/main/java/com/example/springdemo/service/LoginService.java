@@ -9,4 +9,5 @@ import java.text.ParseException;
 public interface LoginService {
     AuthenticationResponseDTO login(LoginRequestDTO loginRequest);
     boolean verifyToken(String token) throws JOSEException, ParseException;
+
 }

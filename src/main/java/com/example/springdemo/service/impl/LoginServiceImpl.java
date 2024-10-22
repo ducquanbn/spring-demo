@@ -65,7 +65,6 @@ public class LoginServiceImpl implements LoginService {
         return verify && expDate.after(new Date());
     }
 
-
     private String generateToken(LoginRequestDTO request, CustomerEntity customer) {
 
         if (!verifyPassword(request, customer)) {
